@@ -143,3 +143,5 @@ Fichier DB: `data/egk.sqlite`
 2. Ajouter une entrée de stock (Mouvements)
 3. Créer une commande validée (Commandes)
 4. Vérifier la baisse du stock (Produits + Fiche de stock)
+
+Bonne chance
