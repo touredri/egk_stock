@@ -58,6 +58,25 @@ npm run start
 
 Application disponible sur `http://localhost:3000`.
 
+## Déploiement sur Vercel
+
+Le projet est configuré pour Vercel via `vercel.json` + entrée serverless `api/index.js`.
+
+### Étapes
+
+1. Push du projet sur GitHub
+2. Import du repo dans Vercel
+3. Framework Preset: `Other`
+4. Build Command: laisser vide
+5. Output Directory: laisser vide
+6. Deploy
+
+### Important (SQLite)
+
+Sur Vercel, SQLite est stocké dans `/tmp` (éphémère). Les données peuvent être perdues entre redémarrages/cold starts.
+
+Pour de la production durable, migrer la base vers un service persistant (PostgreSQL, MySQL, etc.).
+
 ### Mode développement
 
 ```bash
