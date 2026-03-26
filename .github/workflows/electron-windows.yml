@@ -1,5 +1,8 @@
 name: Electron Windows Build
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
 on:
   push:
     branches:
@@ -27,7 +30,7 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm i
+        run: npm ci
 
       - name: Build Windows installer
         run: npm run dist:win
