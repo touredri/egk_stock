@@ -18,6 +18,9 @@ jobs:
   build-windows-installer:
     runs-on: windows-latest
     timeout-minutes: 30
+    env:
+      CSC_LINK: ${{ secrets.WIN_CSC_LINK }}
+      CSC_KEY_PASSWORD: ${{ secrets.WIN_CSC_KEY_PASSWORD }}
 
     steps:
       - name: Checkout
@@ -31,6 +34,15 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Signing mode
+        shell: pwsh
+        run: |
+          if ([string]::IsNullOrWhiteSpace("$env:CSC_LINK") -or [string]::IsNullOrWhiteSpace("$env:CSC_KEY_PASSWORD")) {
+            Write-Host "Windows installer will be UNSIGNED (missing WIN_CSC_LINK / WIN_CSC_KEY_PASSWORD secrets)."
+          } else {
+            Write-Host "Windows installer will be SIGNED using configured certificate secrets."
+          }
 
       - name: Build Windows installer
         run: npm run dist:win

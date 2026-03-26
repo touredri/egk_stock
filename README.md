@@ -105,6 +105,27 @@ git tag v1.0.0
 git push origin v1.0.0
 ```
 
+### Signature Windows (recommandé)
+
+Pour réduire l'alerte SmartScreen, configure un certificat de signature de code dans les secrets GitHub.
+
+Secrets requis:
+1. `WIN_CSC_LINK`: contenu du certificat `.pfx` encodé en base64 (ou URL de téléchargement sécurisée)
+2. `WIN_CSC_KEY_PASSWORD`: mot de passe du certificat
+
+Exemple pour générer la valeur base64 du `.pfx`:
+
+```bash
+base64 -i certificat.pfx | pbcopy
+```
+
+Puis:
+1. GitHub > Settings > Secrets and variables > Actions
+2. Ajouter `WIN_CSC_LINK` et coller la valeur base64
+3. Ajouter `WIN_CSC_KEY_PASSWORD`
+
+Sans ces secrets, le workflow fonctionne quand même mais génère un installateur non signé.
+
 Pour télécharger l'installeur:
 1. Ouvrir GitHub > Actions
 2. Ouvrir un run du workflow `Electron Windows Build`
