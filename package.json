@@ -8,7 +8,8 @@
     "dev": "nodemon backend/server.js",
     "electron": "electron .",
     "electron:dev": "ELECTRON_PORT=3100 electron .",
-    "dist:win": "electron-builder --win nsis",
+    "dist:win": "electron-builder --win nsis --publish never",
+    "dist:win:release": "electron-builder --win nsis --publish always",
     "test": "echo \"No automated tests configured\""
   },
   "keywords": [],

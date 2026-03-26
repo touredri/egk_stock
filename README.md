@@ -76,6 +76,12 @@ npm run dist:win
 
 Le fichier d'installation est généré dans le dossier `release/`.
 
+Pour un build release explicite (publication activée côté electron-builder), utiliser:
+
+```bash
+npm run dist:win:release
+```
+
 ### Build automatique (GitHub Actions)
 
 Un workflow CI est configuré dans `.github/workflows/electron-windows.yml`.
