@@ -1,11 +1,14 @@
 {
   "name": "egk",
   "version": "1.0.0",
-  "description": "",
-  "main": "backend/server.js",
+  "description": "Application de gestion de stock BTP (Web + Desktop Electron)",
+  "main": "electron/main.js",
   "scripts": {
     "start": "node backend/server.js",
     "dev": "nodemon backend/server.js",
+    "electron": "electron .",
+    "electron:dev": "ELECTRON_PORT=3100 electron .",
+    "dist:win": "electron-builder --win nsis",
     "test": "echo \"No automated tests configured\""
   },
   "keywords": [],
@@ -19,6 +22,27 @@
     "morgan": "^1.10.1"
   },
   "devDependencies": {
+    "electron": "^35.1.5",
+    "electron-builder": "^26.0.12",
     "nodemon": "^3.1.14"
+  },
+  "build": {
+    "appId": "com.egk.stock",
+    "productName": "EGK Stock",
+    "asar": true,
+    "files": [
+      "backend/**/*",
+      "frontend/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    }
   }
 }

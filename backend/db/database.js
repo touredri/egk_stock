@@ -3,9 +3,10 @@ const path = require('path');
 const fs = require('fs');
 
 const isVercel = Boolean(process.env.VERCEL);
+const customDataDir = process.env.EGK_DATA_DIR;
 const dataDir = isVercel
   ? path.join('/tmp', 'egk-data')
-  : path.join(__dirname, '..', '..', 'data');
+  : customDataDir || path.join(__dirname, '..', '..', 'data');
 if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
 }

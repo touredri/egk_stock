@@ -58,6 +58,28 @@ npm run start
 
 Application disponible sur `http://localhost:3000`.
 
+## Version desktop (Electron)
+
+L'application peut être lancée en mode desktop. Electron démarre le backend Express en local puis charge l'interface dans une fenêtre native.
+
+### Lancer en desktop
+
+```bash
+npm run electron
+```
+
+### Générer un installateur Windows
+
+```bash
+npm run dist:win
+```
+
+Le fichier d'installation est généré dans le dossier `release/`.
+
+### Stockage SQLite en desktop
+
+En mode Electron, la base SQLite et les sauvegardes sont stockées dans le dossier utilisateur de l'application (persistant sur le disque Windows), et non dans `data/` du projet.
+
 ## Déploiement sur Vercel
 
 Le projet est configuré pour Vercel via `vercel.json` + entrée serverless `api/index.js`.
