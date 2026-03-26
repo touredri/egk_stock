@@ -12,6 +12,7 @@
   --radius-lg: 1rem;
   --radius-md: 0.8rem;
   --radius-sm: 0.6rem;
+  --mobile-nav-height: 72px;
 }
 
 body.dark {
@@ -37,6 +38,20 @@ body {
   background: var(--bg);
   color: var(--text);
   line-height: 1.4;
+  overflow-x: hidden;
+}
+
+html,
+#app,
+.layout,
+.main,
+.topbar,
+.topbar-actions,
+.global-search-form,
+.card,
+.table-wrap,
+.toolbar {
+  min-width: 0;
 }
 
 .layout {
@@ -89,6 +104,14 @@ body {
   cursor: pointer;
   font-size: 0.98rem;
   transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+
+.nav-icon {
+  display: inline-block;
+}
+
+.nav-text {
+  display: inline;
 }
 
 .nav-link.active,
@@ -416,6 +439,10 @@ tbody tr:hover {
   flex-wrap: wrap;
 }
 
+.actions .btn {
+  white-space: normal;
+}
+
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -481,6 +508,11 @@ tbody tr:hover {
   gap: 0.5rem;
 }
 
+.bottom-nav,
+.mobile-more-panel {
+  display: none;
+}
+
 .toast {
   color: white;
   border-radius: var(--radius-sm);
@@ -502,6 +534,7 @@ tbody tr:hover {
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  flex-wrap: wrap;
   gap: 0.6rem;
   margin-top: 0.8rem;
 }
@@ -570,11 +603,100 @@ tbody tr:hover {
   }
 
   .sidebar {
-    border-right: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    border-radius: 0;
-    height: auto;
-    position: static;
+    display: none;
+  }
+
+  .main {
+    padding: 0.35rem 0.35rem calc(var(--mobile-nav-height) + env(safe-area-inset-bottom) + 1rem);
+  }
+
+  .bottom-nav {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 0.35rem;
+    align-items: center;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: calc(var(--mobile-nav-height) + env(safe-area-inset-bottom));
+    padding: 0.35rem 0.4rem calc(0.35rem + env(safe-area-inset-bottom));
+    background: linear-gradient(180deg, var(--surface), var(--surface-2));
+    border-top: 1px solid var(--border);
+    z-index: 45;
+  }
+
+  .bottom-nav-link {
+    width: 100%;
+    margin: 0;
+    min-height: 48px;
+    padding: 0.4rem 0.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-radius: 0.75rem;
+    transform: none;
+  }
+
+  .bottom-nav-link.nav-link:hover {
+    transform: none;
+  }
+
+  .bottom-nav-link .nav-text {
+    display: none;
+  }
+
+  .bottom-nav-link .nav-icon {
+    font-size: 1.1rem;
+    line-height: 1;
+  }
+
+  .mobile-more-panel {
+    display: block;
+    position: fixed;
+    left: 0.45rem;
+    right: 0.45rem;
+    bottom: calc(var(--mobile-nav-height) + env(safe-area-inset-bottom) + 0.45rem);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 0.7rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+    z-index: 46;
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+    pointer-events: none;
+    visibility: hidden;
+    transition: opacity 0.18s ease, transform 0.2s ease, visibility 0.2s ease;
+  }
+
+  .mobile-more-panel.is-open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+    visibility: visible;
+  }
+
+  .mobile-more-head {
+    margin-bottom: 0.55rem;
+    color: var(--muted);
+    font-size: 0.88rem;
+    font-weight: 700;
+  }
+
+  .mobile-more-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .mobile-more-link {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    text-align: left;
+    margin: 0;
   }
 
   .kpi-grid {
@@ -597,21 +719,169 @@ tbody tr:hover {
   .topbar-actions {
     width: 100%;
     flex-wrap: wrap;
-    justify-content: flex-end;
+    justify-content: flex-start;
+    gap: 0.45rem;
   }
 
   .global-search-form {
     width: 100%;
-    order: 3;
+    order: 2;
+  }
+
+  .global-search-form input {
+    min-width: 0;
   }
 
   .topbar {
     border-radius: 0;
     border-left: 0;
     border-right: 0;
+    padding: 0.65rem;
+    margin-bottom: 0.65rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.55rem;
+  }
+
+  .topbar-title {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .page-title {
+    font-size: 1.1rem;
+  }
+
+  .page-subtitle {
+    display: none;
+  }
+
+  .notifications-wrap {
+    order: 1;
+  }
+
+  #toggle-theme {
+    order: 1;
+  }
+
+  .notifications-panel {
+    right: auto;
+    left: 0;
+    width: min(320px, 92vw);
+  }
+
+  .toast-root {
+    bottom: calc(var(--mobile-nav-height) + env(safe-area-inset-bottom) + 0.7rem);
+    right: 0.6rem;
   }
 
   .drawer {
     width: 100%;
+  }
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .toolbar > input,
+  .toolbar > select,
+  .toolbar > .field,
+  .toolbar > label,
+  .toolbar > button,
+  .toolbar > .btn {
+    width: 100%;
+    max-width: none !important;
+  }
+
+  .toolbar .field {
+    margin: 0;
+  }
+
+  .actions .btn {
+    min-height: 42px;
+  }
+
+  th,
+  td {
+    white-space: nowrap;
+  }
+
+  .pagination {
+    justify-content: space-between;
+  }
+
+  .pagination .btn {
+    flex: 1 1 auto;
+  }
+
+  .pagination span {
+    width: 100%;
+    text-align: center;
+    order: -1;
+  }
+
+  .modal {
+    max-height: calc(100vh - 2.2rem - env(safe-area-inset-bottom));
+  }
+
+  .modal-actions {
+    flex-wrap: wrap;
+  }
+
+  .modal-actions .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 720px) {
+  .bottom-nav {
+    gap: 0.22rem;
+    padding-left: 0.28rem;
+    padding-right: 0.28rem;
+  }
+
+  .bottom-nav-link {
+    min-height: 44px;
+    padding: 0.35rem 0.12rem;
+  }
+
+  .bottom-nav-link .nav-icon {
+    font-size: 1.02rem;
+  }
+
+  .btn {
+    padding: 0.56rem 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --mobile-nav-height: 68px;
+  }
+
+  .main {
+    padding-left: 0.22rem;
+    padding-right: 0.22rem;
+  }
+
+  .card {
+    padding: 0.78rem;
+    border-radius: 0.75rem;
+  }
+
+  .topbar {
+    padding: 0.55rem;
+  }
+
+  .mobile-more-panel {
+    left: 0.3rem;
+    right: 0.3rem;
+  }
+
+  .toast {
+    min-width: min(90vw, 280px);
   }
 }

@@ -16,7 +16,19 @@ const routes = {
   stocksheet: { title: 'Fiche de stock', render: renderStockSheet }
 };
 
+const navItems = [
+  { key: 'dashboard', label: 'Dashboard', icon: '📊' },
+  { key: 'products', label: 'Produits', icon: '📦' },
+  { key: 'clients', label: 'Clients', icon: '👥' },
+  { key: 'mouvements', label: 'Mouvements', icon: '🔁' },
+  { key: 'commandes', label: 'Commandes', icon: '🧾' },
+  { key: 'stocksheet', label: 'Fiche de stock', icon: '📄' }
+];
+
+const mobilePrimaryRoutes = ['dashboard', 'products', 'clients', 'mouvements', 'commandes'];
+
 let notificationsTimer = null;
+let cleanupMobileMoreListeners = null;
 const READ_NOTIFICATIONS_KEY = 'egk-notifications-read';
 
 async function resolveGlobalSearchRoute(rawTerm) {
@@ -54,6 +66,22 @@ function currentRoute() {
   const hash = location.hash.replace('#/', '');
   const path = hash.split('?')[0] || 'dashboard';
   return routes[path] ? path : 'dashboard';
+}
+
+function buildNavButton(item, routeKey, extraClass = '') {
+  const isActive = routeKey === item.key;
+  return `
+    <button
+      class="nav-link ${extraClass} ${isActive ? 'active' : ''}"
+      data-route="${item.key}"
+      aria-label="${item.label}"
+      title="${item.label}"
+      type="button"
+    >
+      <span class="nav-icon" aria-hidden="true">${item.icon}</span>
+      <span class="nav-text">${item.label}</span>
+    </button>
+  `;
 }
 
 function setTheme(isDark) {
@@ -244,6 +272,10 @@ function setupNotifications(app) {
 }
 
 function buildLayout(routeKey) {
+  const primaryMobileItems = navItems.filter((item) => mobilePrimaryRoutes.includes(item.key));
+  const moreMobileItems = navItems.filter((item) => !mobilePrimaryRoutes.includes(item.key));
+  const moreIsActive = moreMobileItems.some((item) => item.key === routeKey);
+
   const app = document.getElementById('app');
   app.innerHTML = `
     <div class="layout">
@@ -251,12 +283,7 @@ function buildLayout(routeKey) {
         <h1 class="brand">🏗️ EGK Stock</h1>
         <p class="brand-subtitle">Pilotage opérationnel BTP</p>
         <nav class="sidebar-nav">
-          <button class="nav-link ${routeKey === 'dashboard' ? 'active' : ''}" data-route="dashboard">📊 Dashboard</button>
-          <button class="nav-link ${routeKey === 'products' ? 'active' : ''}" data-route="products">📦 Produits</button>
-          <button class="nav-link ${routeKey === 'clients' ? 'active' : ''}" data-route="clients">👥 Clients</button>
-          <button class="nav-link ${routeKey === 'mouvements' ? 'active' : ''}" data-route="mouvements">🔁 Mouvements</button>
-          <button class="nav-link ${routeKey === 'commandes' ? 'active' : ''}" data-route="commandes">🧾 Commandes</button>
-          <button class="nav-link ${routeKey === 'stocksheet' ? 'active' : ''}" data-route="stocksheet">📄 Fiche de stock</button>
+          ${navItems.map((item) => buildNavButton(item, routeKey)).join('')}
         </nav>
       </aside>
 
@@ -280,6 +307,28 @@ function buildLayout(routeKey) {
         </header>
         <section id="page-root"></section>
       </main>
+
+      <nav class="bottom-nav" aria-label="Navigation principale mobile">
+        ${primaryMobileItems.map((item) => buildNavButton(item, routeKey, 'bottom-nav-link')).join('')}
+        <button
+          class="nav-link bottom-nav-link ${moreIsActive ? 'active' : ''}"
+          id="mobile-more-toggle"
+          aria-label="Plus"
+          title="Plus"
+          aria-expanded="false"
+          type="button"
+        >
+          <span class="nav-icon" aria-hidden="true">⋯</span>
+          <span class="nav-text">Plus</span>
+        </button>
+      </nav>
+
+      <div class="mobile-more-panel" id="mobile-more-panel" aria-hidden="true">
+        <div class="mobile-more-head">Plus</div>
+        <div class="mobile-more-links">
+          ${moreMobileItems.map((item) => buildNavButton(item, routeKey, 'mobile-more-link')).join('')}
+        </div>
+      </div>
     </div>
   `;
 
@@ -288,6 +337,62 @@ function buildLayout(routeKey) {
       location.hash = `#/${btn.dataset.route}`;
     });
   });
+
+  if (typeof cleanupMobileMoreListeners === 'function') {
+    cleanupMobileMoreListeners();
+    cleanupMobileMoreListeners = null;
+  }
+
+  const mobileMoreToggle = app.querySelector('#mobile-more-toggle');
+  const mobileMorePanel = app.querySelector('#mobile-more-panel');
+  if (mobileMoreToggle && mobileMorePanel) {
+    const isOpen = () => mobileMorePanel.classList.contains('is-open');
+
+    const openMorePanel = () => {
+      mobileMorePanel.classList.add('is-open');
+      mobileMorePanel.setAttribute('aria-hidden', 'false');
+      mobileMoreToggle.setAttribute('aria-expanded', 'true');
+    };
+
+    const closeMorePanel = () => {
+      mobileMorePanel.classList.remove('is-open');
+      mobileMorePanel.setAttribute('aria-hidden', 'true');
+      mobileMoreToggle.setAttribute('aria-expanded', 'false');
+    };
+
+    mobileMoreToggle.addEventListener('click', () => {
+      if (!isOpen()) {
+        openMorePanel();
+      } else {
+        closeMorePanel();
+      }
+    });
+
+    mobileMorePanel.querySelectorAll('[data-route]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        closeMorePanel();
+      });
+    });
+
+    const onDocumentPointerDown = (event) => {
+      if (!isOpen()) return;
+      if (event.target.closest('#mobile-more-panel') || event.target.closest('#mobile-more-toggle')) return;
+      closeMorePanel();
+    };
+
+    const onDocumentKeyDown = (event) => {
+      if (event.key !== 'Escape') return;
+      if (!isOpen()) return;
+      closeMorePanel();
+    };
+
+    document.addEventListener('pointerdown', onDocumentPointerDown);
+    document.addEventListener('keydown', onDocumentKeyDown);
+    cleanupMobileMoreListeners = () => {
+      document.removeEventListener('pointerdown', onDocumentPointerDown);
+      document.removeEventListener('keydown', onDocumentKeyDown);
+    };
+  }
 
   app.querySelector('#toggle-theme').addEventListener('click', () => {
     const next = !document.body.classList.contains('dark');
@@ -320,6 +425,7 @@ function buildLayout(routeKey) {
 
 async function renderApp() {
   const routeKey = currentRoute();
+  window.scrollTo(0, 0);
   buildLayout(routeKey);
   const pageRoot = document.getElementById('page-root');
 
