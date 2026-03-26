@@ -76,6 +76,34 @@ npm run dist:win
 
 Le fichier d'installation est généré dans le dossier `release/`.
 
+### Build automatique (GitHub Actions)
+
+Un workflow CI est configuré dans `.github/workflows/electron-windows.yml`.
+
+- Déclenchement automatique: push sur la branche `electron`
+- Déclenchement release automatique: push d'un tag `v*` (ex: `v1.0.0`)
+- Déclenchement manuel: onglet Actions > workflow `Electron Windows Build` > Run workflow
+- Résultat: artefact `egk-electron-windows` contenant l'installeur `.exe`
+
+### Publication GitHub Release automatique
+
+Quand tu pushes un tag de version (`v1.0.0`, `v1.1.0`, etc.), le workflow:
+- build l'installeur Windows
+- crée une GitHub Release
+- attache automatiquement les fichiers `.exe` et métadonnées de mise à jour
+
+Exemple:
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+Pour télécharger l'installeur:
+1. Ouvrir GitHub > Actions
+2. Ouvrir un run du workflow `Electron Windows Build`
+3. Télécharger l'artefact `egk-electron-windows`
+
 ### Stockage SQLite en desktop
 
 En mode Electron, la base SQLite et les sauvegardes sont stockées dans le dossier utilisateur de l'application (persistant sur le disque Windows), et non dans `data/` du projet.
