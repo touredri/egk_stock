@@ -4,7 +4,11 @@ const Database = require('better-sqlite3');
 const db = require('../db/database');
 const { httpError } = require('./httpError');
 
-const dataDir = path.join(__dirname, '..', '..', 'data');
+const isVercel = Boolean(process.env.VERCEL);
+const customDataDir = process.env.EGK_DATA_DIR;
+const dataDir = isVercel
+  ? path.join('/tmp', 'egk-data')
+  : customDataDir || path.join(__dirname, '..', '..', 'data');
 const backupsDir = path.join(dataDir, 'backups');
 
 if (!fs.existsSync(backupsDir)) {
